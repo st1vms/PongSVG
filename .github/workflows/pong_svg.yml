@@ -1,6 +1,8 @@
-name: Generate Pong SVGs
+name: Generates Pong SVGs every hour
 
 on:
+  schedule:
+      - cron: "0 * * * *"
   workflow_dispatch:
 
 jobs:
@@ -12,10 +14,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Generate SVGs
-        uses: ./
+      - name: Generate Pong SVGs
+        uses: st1vms/PongSVG@main
         with:
           winning-score: 1
+
+      - name: Move generated SVGs
+        run: |
+            mkdir -p examples
+            mv pong_light.svg examples/pong_light.svg
+            mv pong_dark.svg examples/pong_dark.svg
 
       - name: Configure git
         run: |
@@ -24,6 +32,6 @@ jobs:
 
       - name: Commit and push SVGs
         run: |
-          git add pong_light.svg pong_dark.svg
+          git add examples/pong_light.svg examples/pong_dark.svg
           git commit -m "Update Pong SVGs"
           git push
