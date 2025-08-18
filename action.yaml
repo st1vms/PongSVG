@@ -25,3 +25,4 @@ runs:
 
         - name: Run Python script
           run: python pong_svg.py --winning-score ${{ inputs.winning-score }}
+          shell: bash
