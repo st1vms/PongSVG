@@ -197,7 +197,7 @@ def gen_pong_svg(
     tree.write(output_file_path, encoding="utf-8", xml_declaration=True)
 
 
-class PongGame:
+class PongGameSvgGenerator:
     """
     A simple Pong game simulation.
 
@@ -231,7 +231,9 @@ class PongGame:
         Maximum speed the ball can reach.
     """
 
-    def __init__(self, canvas_width=600, canvas_height=300):
+    def __init__(
+        self, canvas_width: int = 600, canvas_height: int = 300, winning_score: int = 1
+    ):
         """
         Initialize a new Pong game instance with the given canvas size.
 
@@ -241,13 +243,15 @@ class PongGame:
             Width of the game canvas (default is 600).
         canvas_height : int, optional
             Height of the game canvas (default is 300).
+        winning_score : int, optional
+            The winning score at which the game stops and the svg generation starts (default is 1)
         """
         # Canvas
         self.canvas_width = canvas_width
         self.canvas_height = canvas_height
 
         # Config
-        self.winning_score = 10
+        self.winning_score = winning_score
         self.tick_rate_ms = 10
 
         # Paddle properties
@@ -489,7 +493,12 @@ class PongGame:
 
         return True
 
-    def start(self, frames_output_fpath="frames.json"):
+    def generate(
+        self,
+        frames_output_fpath="frames.json",
+        dark_svg_path: str = "pong_dark.svg",
+        light_svg_path: str = "pong_light.svg",
+    ):
         """
         Run the Pong game simulation.
 
@@ -588,7 +597,7 @@ class PongGame:
             player_two_frames,
             ball_frames,
             self.score_frames,
-            "pong_dark.svg",
+            dark_svg_path,
             primary_color="white",
         )
 
@@ -606,7 +615,7 @@ class PongGame:
             player_two_frames,
             ball_frames,
             self.score_frames,
-            "pong_light.svg",
+            light_svg_path,
             primary_color="black",
         )
 
@@ -630,6 +639,4 @@ class PongGame:
 
 
 if __name__ == "__main__":
-    pong = PongGame()
-    pong.winning_score = 3
-    pong.start()
+    PongGameSvgGenerator(winning_score=3).generate()

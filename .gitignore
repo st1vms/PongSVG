@@ -1,6 +1,7 @@
 # Repo specific
 *.txt
 *.json
+/*.svg
 
 # VS Code
 .vscode/
