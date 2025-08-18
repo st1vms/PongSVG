@@ -35,7 +35,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Generate Pong SVGs
-        uses: st1vms/PongSVG@main
+        uses: st1vms/PongSVG@v1.0.0
         with:
           winning-score: 3
 
