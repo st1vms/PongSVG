@@ -1,22 +1,29 @@
-name: Test Pong Action
+name: Generate Pong SVGs
 
 on:
-  workflow_dispatch:  # allows manual run from GitHub UI
+  workflow_dispatch:
 
 jobs:
-  run-action:
+  generate-pong-svg:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Run Pong Action
-        uses: ./        # points to root where action.yml is
+      - name: Generate SVGs
+        uses: ./
         with:
           winning-score: 1
 
-      - name: Upload SVG
-        uses: actions/upload-artifact@v4
-        with:
-          name: pong-svg
-          path: pong_light.svg
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and push SVGs
+        run: |
+          git add pong_light.svg pong_dark.svg
+          git commit -m "Update Pong SVGs"
+          git push
