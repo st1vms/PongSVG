@@ -16,7 +16,7 @@ jobs:
           winning-score: 5
 
       - name: Upload SVG
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pong-svg
           path: pong_light.svg
