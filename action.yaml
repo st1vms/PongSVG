@@ -24,5 +24,5 @@ runs:
               python-version: "3.11"
 
         - name: Run Python script
-          run: python pong_svg.py --winning-score ${{ inputs.winning-score }}
+          run: python ${{ github.action_path }}/pong_svg.py --winning-score ${{ inputs.winning-score }}
           shell: bash
