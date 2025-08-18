@@ -1,0 +1,22 @@
+name: Test Pong Action
+
+on:
+  workflow_dispatch:  # allows manual run from GitHub UI
+
+jobs:
+  run-action:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Run Pong Action
+        uses: ./        # points to root where action.yml is
+        with:
+          winning-score: 5
+
+      - name: Upload SVG
+        uses: actions/upload-artifact@v3
+        with:
+          name: pong-svg
+          path: pong_light.svg
