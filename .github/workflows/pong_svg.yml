@@ -17,7 +17,7 @@ jobs:
       - name: Generate Pong SVGs
         uses: st1vms/PongSVG@main
         with:
-          winning-score: 1
+          winning-score: 3
 
       - name: Move generated SVGs
         run: |
