@@ -233,7 +233,7 @@ class PongGameSvgGenerator:
     """
 
     def __init__(
-        self, canvas_width: int = 800, canvas_height: int = 300, winning_score: int = 1
+        self, canvas_width: int = 824, canvas_height: int = 300, winning_score: int = 1
     ):
         """
         Initialize a new Pong game instance with the given canvas size.
@@ -241,7 +241,7 @@ class PongGameSvgGenerator:
         Parameters
         ----------
         canvas_width : int, optional
-            Width of the game canvas (default is 800).
+            Width of the game canvas (default is 824).
         canvas_height : int, optional
             Height of the game canvas (default is 300).
         winning_score : int, optional
