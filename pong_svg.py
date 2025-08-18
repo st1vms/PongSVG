@@ -1,5 +1,6 @@
 """Pong simulation"""
 
+import argparse
 import math
 from random import randint
 from time import sleep, perf_counter
@@ -639,4 +640,13 @@ class PongGameSvgGenerator:
 
 
 if __name__ == "__main__":
-    PongGameSvgGenerator(winning_score=3).generate()
+    parser = argparse.ArgumentParser(description="Game configuration")
+    parser.add_argument(
+        "--winning-score",
+        type=int,
+        default=2,
+        help="Set the winning score (default: 2)",
+    )
+
+    args = parser.parse_args()
+    PongGameSvgGenerator(winning_score=args.winning_score).generate()

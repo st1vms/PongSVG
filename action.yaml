@@ -1,0 +1,27 @@
+name: "Generate Pong SVGs"
+description: "Generate dark and light svg from a simulated pong game"
+author: "st1vms"
+
+branding:
+    icon: "image"
+    color: "white"
+
+inputs:
+    winning-score:
+        description: "Winning score for the game"
+        required: false
+        default: "2"
+
+runs:
+    using: "composite"
+    steps:
+        - name: Checkout repository
+          uses: actions/checkout@v3
+
+        - name: Set up Python
+          uses: actions/setup-python@v4
+          with:
+              python-version: "3.11"
+
+        - name: Run Python script
+          run: python pong_svg.py --winning-score ${{ inputs.winning-score }}
