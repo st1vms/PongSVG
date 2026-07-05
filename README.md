@@ -56,7 +56,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Generate Pong SVGs
-        uses: st1vms/PongSVG@v1.0.0
+        uses: st1vms/PongSVG@v1.2.0
         with:
           winning-score: 3
           mode: "avatar" # Options: avatar, star, follower, custom (Defaults to avatar)
