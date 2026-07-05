@@ -4,9 +4,9 @@ Dynamically generate beautiful, dark/light mode-adaptive Pong game animations in
 
 ```html
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="images/pong_dark.svg?v=1" />
-  <source media="(prefers-color-scheme: light)" srcset="images/pong_light.svg?v=1" />
-  <img alt="Pong Game Animation" src="images/pong_light.svg?v=1" />
+  <source media="(prefers-color-scheme: dark)" srcset="images/pong_dark.svg" />
+  <source media="(prefers-color-scheme: light)" srcset="images/pong_light.svg" />
+  <img alt="Pong Game Animation" src="images/pong_light.svg" />
 </picture>
 ```
 
