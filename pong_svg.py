@@ -660,8 +660,14 @@ if __name__ == "__main__":
         img_path = f"https://github.com/{repo_owner}.png"
 
     if img_path.startswith("http://") or img_path.startswith("https://"):
+        # Scarica comunque localmente per il runner
         download_github_avatar(img_path)
-        img_path = f"https://raw.githubusercontent.com/{repo_env}/main/images/ball_avatar.png"
+
+        # Recupera il branch corrente (es. 'main', 'master', 'dev')
+        current_branch = os.getenv("GITHUB_REF_NAME", "main")
+
+        # Costruisce l'URL dinamico corretto
+        img_path = f"https://raw.githubusercontent.com/{repo_env}/{current_branch}/images/ball_avatar.png"
     else:
         if not os.path.isabs(img_path) and not img_path.startswith("./"):
             img_path = "./" + img_path
