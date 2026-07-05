@@ -1,28 +1,47 @@
 name: "Generate Pong SVGs"
-description: "Generate dark and light svg from a simulated pong game"
+description: "Generate dark and light SVG animations from a simulated pong game featuring GitHub avatars"
 author: "st1vms"
 
 branding:
-    icon: "image"
-    color: "white"
+  icon: "image"
+  color: "white"
 
 inputs:
-    winning-score:
-        description: "Winning score for the game"
-        required: false
-        default: "2"
+  winning-score:
+    description: "Winning score for the game"
+    required: false
+    default: "2"
+  mode:
+    description: "Avatar selection mode: 'star' (last stargazer), 'avatar' (your own), 'follower' (random follower), or 'custom'"
+    required: false
+    default: "avatar"
+  image:
+    description: "Path or URL to a custom image (only used if mode is set to 'custom')"
+    required: false
+    default: ""
 
 runs:
-    using: "composite"
-    steps:
-        - name: Checkout repository
-          uses: actions/checkout@v3
+  using: "composite"
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-        - name: Set up Python
-          uses: actions/setup-python@v4
-          with:
-              python-version: "3.11"
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
 
-        - name: Run Python script
-          run: python ${{ github.action_path }}/pong_svg.py --winning-score ${{ inputs.winning-score }}
-          shell: bash
+    - name: Run Python script
+      run: |
+        CMD="python ${{ github.action_path }}/pong_svg.py -w ${{ inputs.winning-score }}"
+        if [ "${{ inputs.mode }}" = "star" ]; then
+          CMD="$CMD -s"
+        elif [ "${{ inputs.mode }}" = "avatar" ]; then
+          CMD="$CMD -a"
+        elif [ "${{ inputs.mode }}" = "follower" ]; then
+          CMD="$CMD -f"
+        elif [ "${{ inputs.mode }}" = "custom" ]; then
+          CMD="$CMD -i '${{ inputs.image }}'"
+        fi
+        eval $CMD
+      shell: bash

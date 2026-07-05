@@ -1,6 +1,12 @@
 # Repo specific
 *.txt
 *.json
+/*.svg
+/*.png
+/*.jpg
+/*.jpeg
+/*.webp
+*test*
 
 # VS Code
 .vscode/
