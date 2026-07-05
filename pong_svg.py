@@ -1,15 +1,16 @@
-"""Pong simulation"""
+"""Pong simulation with embedded GitHub avatars"""
 
 import argparse
-import logging
-import urllib.parse
-import urllib.request
+import base64
+import datetime
 import json
+import logging
 import os
 import sys
-import datetime
-from random import randint, choice
-from time import sleep, perf_counter
+from random import choice, randint
+from time import perf_counter, sleep
+import urllib.parse
+import urllib.request
 from xml.etree import ElementTree as ET
 
 # Logging configuration
@@ -57,9 +58,7 @@ def download_github_avatar(url: str, output_filename: str = "ball_avatar.png") -
 
 def get_last_stargazer_of_account(username: str) -> str:
     """Fetches the avatar URL of the user who dropped the latest star across all public repositories of the account."""
-    repos_url = (
-        f"https://api.github.com/users/{username}/repos?sort=updated&per_page=10"
-    )
+    repos_url = f"https://api.github.com/users/{username}/repos?sort=updated&per_page=10"
     req_repos = urllib.request.Request(repos_url, headers={"User-Agent": "Mozilla/5.0"})
 
     logging.info(f"Fetching recent repositories for account: {username}")
@@ -76,25 +75,18 @@ def get_last_stargazer_of_account(username: str) -> str:
                 continue
 
             repo_name = repo["full_name"]
-            stars_url = (
-                f"https://api.github.com/repos/{repo_name}/stargazers?per_page=1&page=1"
-            )
-            req_stars = urllib.request.Request(
-                stars_url,
-                headers={
-                    "User-Agent": "Mozilla/5.0",
-                    "Accept": "application/vnd.github.v3.star+json",
-                },
-            )
+            stars_url = f"https://api.github.com/repos/{repo_name}/stargazers?per_page=1&page=1"
+            req_stars = urllib.request.Request(stars_url, headers={
+                "User-Agent": "Mozilla/5.0",
+                "Accept": "application/vnd.github.v3.star+json"
+            })
 
             try:
                 with urllib.request.urlopen(req_stars) as star_response:
                     stargazers = json.loads(star_response.read().decode())
                     if stargazers:
                         star_info = stargazers[0]
-                        starred_at_str = star_info.get(
-                            "starred_at", "1970-01-01T00:00:00Z"
-                        ).replace("Z", "+00:00")
+                        starred_at_str = star_info.get("starred_at", "1970-01-01T00:00:00Z").replace("Z", "+00:00")
                         star_time = datetime.datetime.fromisoformat(starred_at_str)
 
                         if latest_star_time is None or star_time > latest_star_time:
@@ -105,14 +97,10 @@ def get_last_stargazer_of_account(username: str) -> str:
                 continue
 
         if latest_stargazer_avatar:
-            logging.info(
-                f"Absolute last stargazer across account found: {latest_stargazer_login}"
-            )
+            logging.info(f"Absolute last stargazer across account found: {latest_stargazer_login}")
             return latest_stargazer_avatar
 
-        logging.warning(
-            "No stargazers found across any recent repository. Falling back to owner avatar."
-        )
+        logging.warning("No stargazers found across any recent repository. Falling back to owner avatar.")
         return f"https://github.com/{username}.png"
 
     except Exception as e:
@@ -134,13 +122,24 @@ def get_random_follower_avatar(username: str) -> str:
                 logging.info(f"Random follower picked: {random_follower['login']}")
                 return random_follower["avatar_url"]
             else:
-                logging.warning(
-                    "No followers found for this account. Falling back to owner avatar."
-                )
+                logging.warning("No followers found for this account. Falling back to owner avatar.")
                 return f"https://github.com/{username}.png"
     except Exception as e:
         logging.error(f"Failed to fetch followers from GitHub API: {e}")
         sys.exit(1)
+
+
+def get_base64_data_url(local_path: str) -> str:
+    """Converts a local image file into a Base64 Data URL for standalone SVG inline rendering."""
+    try:
+        with open(local_path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode("utf-8")
+        ext = local_path.split(".")[-1].lower()
+        mime = "image/jpeg" if ext in ["jpg", "jpeg"] else "image/png"
+        return f"data:{mime};base64,{encoded_string}"
+    except Exception as e:
+        logging.error(f"Failed to convert image to Base64: {e}")
+        return ""
 
 
 def gen_pong_svg(
@@ -157,7 +156,7 @@ def gen_pong_svg(
     ball_frames: list[list[float]],
     score_frames: list[list],
     output_file_path: str,
-    image_filename: str,
+    image_data_url: str,
     primary_color: str = "gray",
     score_text_area_height: int = 40,
 ):
@@ -304,12 +303,12 @@ def gen_pong_svg(
     ball_image = ET.SubElement(
         ball_group,
         "image",
-        href=image_filename,
+        href=image_data_url,
         x=str(-img_size / 2),
         y=str(-img_size / 2),
         width=str(img_size),
         height=str(img_size),
-        preserveAspectRatio="xMidYMid slice",
+        preserveAspectRatio="xMidYMid slice"
     )
     ball_image.set("clip-path", "url(#ball-clip)")
 
@@ -510,7 +509,7 @@ class PongGameSvgGenerator:
 
     def generate(
         self,
-        image_filename: str,
+        image_data_url: str,
         frames_output_fpath="frames.json",
         dark_svg_path: str = "pong_dark.svg",
         light_svg_path: str = "pong_light.svg",
@@ -579,7 +578,7 @@ class PongGameSvgGenerator:
             ball_frames,
             self.score_frames,
             dark_svg_path,
-            image_filename,
+            image_data_url,
             primary_color="white",
         )
         gen_pong_svg(
@@ -596,7 +595,7 @@ class PongGameSvgGenerator:
             ball_frames,
             self.score_frames,
             light_svg_path,
-            image_filename,
+            image_data_url,
             primary_color="black",
         )
 
@@ -606,9 +605,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-w", "--winning-score", type=int, default=2, help="Set the winning score"
     )
-    parser.add_argument(
-        "-i", "--image", type=str, help="Filename or URL of the ball image"
-    )
+    parser.add_argument("-i", "--image", type=str, help="Filename or URL of the ball image")
     parser.add_argument(
         "-s",
         "--star-mode",
@@ -638,40 +635,39 @@ if __name__ == "__main__":
     repo_env = os.getenv("GITHUB_REPOSITORY", "octocat/Hello-World")
     repo_owner = repo_env.split("/")[0]
 
-    # Explicit handling of the typo fix (args.follower_mode)
-    # If no flags are provided, it defaults to avatar-mode logic
-    if (
-        not args.image
-        and not args.star_mode
-        and not args.avatar_mode
-        and not args.follower_mode
-    ):
+    # Default fallback routing logic
+    if not args.image and not args.star_mode and not args.avatar_mode and not args.follower_mode:
         logging.info("No mode specified. Defaulting to avatar mode.")
         args.avatar_mode = True
 
-    # Image source routing logic
+    # Image source assignment
     if args.star_mode:
-        img_path = get_last_stargazer_of_account(repo_owner)
+        img_source = get_last_stargazer_of_account(repo_owner)
     elif args.follower_mode:
-        img_path = get_random_follower_avatar(repo_owner)
+        img_source = get_random_follower_avatar(repo_owner)
     elif args.image:
-        img_path = args.image
-    else:  # avatar_mode or absolute default fallback
-        img_path = f"https://github.com/{repo_owner}.png"
-
-    if img_path.startswith("http://") or img_path.startswith("https://"):
-        # Scarica comunque localmente per il runner
-        download_github_avatar(img_path)
-
-        # Recupera il branch corrente (es. 'main', 'master', 'dev')
-        current_branch = os.getenv("GITHUB_REF_NAME", "main")
-
-        # Costruisce l'URL dinamico corretto
-        img_path = f"https://raw.githubusercontent.com/{repo_env}/{current_branch}/images/ball_avatar.png"
+        img_source = args.image
     else:
-        if not os.path.isabs(img_path) and not img_path.startswith("./"):
-            img_path = "./" + img_path
+        img_source = f"https://github.com/{repo_owner}.png"
 
-    PongGameSvgGenerator(winning_score=args.winning_score).generate(
-        image_filename=img_path
-    )
+    # Handle downloading if source is a URL
+    if img_source.startswith("http://") or img_source.startswith("https://"):
+        local_avatar_path = download_github_avatar(img_source)
+    else:
+        local_avatar_path = img_source
+        if not os.path.isabs(local_avatar_path) and not local_avatar_path.startswith("./"):
+            local_avatar_path = "./" + local_avatar_path
+
+    # Convert the dynamic image asset directly into an inline Base64 Data URL
+    logging.info("Converting avatar to Base64 Data URL for standalone SVG embedding...")
+    base64_img_url = get_base64_data_url(local_avatar_path)
+
+    if base64_img_url:
+        PongGameSvgGenerator(winning_score=args.winning_score).generate(
+            image_data_url=base64_img_url
+        )
+    else:
+        logging.warning("Base64 conversion failed. Falling back to raw source rendering path.")
+        PongGameSvgGenerator(winning_score=args.winning_score).generate(
+            image_data_url=img_source
+        )
