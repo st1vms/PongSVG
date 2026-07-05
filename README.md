@@ -4,9 +4,9 @@ Dynamically generate beautiful, dark/light mode-adaptive Pong game animations in
 
 ```html
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="images/pong_dark.svg" />
-  <source media="(prefers-color-scheme: light)" srcset="images/pong_light.svg" />
-  <img alt="Pong Game Animation" src="images/pong_light.svg" />
+  <source media="(prefers-color-scheme: dark)" srcset="images/pong_dark.svg?v=1" />
+  <source media="(prefers-color-scheme: light)" srcset="images/pong_light.svg?v=1" />
+  <img alt="Pong Game Animation" src="images/pong_light.svg?v=1" />
 </picture>
 ```
 
@@ -61,19 +61,24 @@ jobs:
           winning-score: 3
           mode: "avatar" # Options: avatar, star, follower, custom (Defaults to avatar)
 
-      - name: Move generated SVGs
+      - name: Move generated SVGs and Assets
         run: |
           mkdir -p images
           mv pong_light.svg images/pong_light.svg
           mv pong_dark.svg images/pong_dark.svg
+          # Sposta l'immagine scaricata nella stessa cartella degli SVG
+          if [ -f "ball_avatar.png" ]; then
+            mv ball_avatar.png images/ball_avatar.png
+          fi
 
       - name: Configure git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Commit and push SVGs
+      - name: Commit and push SVGs and Assets
         run: |
-          git add images/pong_light.svg images/pong_dark.svg
-          git commit -m "Update Pong SVGs with latest avatar"
+          # Aggiungi tutto il contenuto della cartella images
+          git add images/pong_light.svg images/pong_dark.svg images/ball_avatar.png
+          git commit -m "Update Pong SVGs and avatar asset"
           git push
