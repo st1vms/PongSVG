@@ -1,12 +1,18 @@
 # Pong SVG Generator
 
-Dynamically generate beautiful, dark/light mode-adaptive Pong game animations in SVG format for your GitHub Profile README. The ball features an integrated GitHub avatar, defaulting to your own profile picture!
+<picture style="width: 100%;">
+  <source media="(prefers-color-scheme: dark)" srcset="examples/pong_dark.svg" />
+  <source media="(prefers-color-scheme: light)" srcset="examples/pong_light.svg" />
+  <img alt="Pong Game Animation" src="examples/pong_light.svg" style="width: 100%; height: auto;" />
+</picture>
+
+Dynamically generate beautiful, dark/light mode-adaptive Pong game animations in SVG format for your GitHub Profile README. The ball also features GitHub avatars!
 
 ```html
-<picture>
+<picture style="width: 100%;">
   <source media="(prefers-color-scheme: dark)" srcset="images/pong_dark.svg" />
   <source media="(prefers-color-scheme: light)" srcset="images/pong_light.svg" />
-  <img alt="Pong Game Animation" src="images/pong_light.svg" />
+  <img alt="Pong Game Animation" src="images/pong_light.svg" style="width: 100%; height: auto;" />
 </picture>
 ```
 
